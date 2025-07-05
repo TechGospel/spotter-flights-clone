@@ -1,0 +1,14 @@
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+
+# Environment variables
+.env.local
+.env.production
+.env.staging
+
+# Keep .env for development (safe to commit)
+# Keep .env.example for documentation
