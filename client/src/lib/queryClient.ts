@@ -6,8 +6,6 @@ async function throwIfResNotOk(res: Response) {
     throw new Error(`${res.status}: ${text}`);
   }
 }
-const RAPIDAPI_KEY =`31cfc52d74msh036bc37f7e2203ep124d0ajsn9ba81d57e749`;
-const RAPIDAPI_HOST = "sky-scrapper.p.rapidapi.com";
 
 export async function apiRequest(
   method: string,
@@ -16,13 +14,7 @@ export async function apiRequest(
 ): Promise<Response> {
   const res = await fetch(url, {
     method,
-    headers:  {
-      'x-rapidapi-key': RAPIDAPI_KEY,
-      'x-rapidapi-host': RAPIDAPI_HOST,
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      "Content-Type": "application/json"
-    },
-    // headers: data ? { "Content-Type": "application/json" } : {},
+    headers:  { "Content-Type": "application/json" },
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
