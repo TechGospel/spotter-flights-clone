@@ -20,7 +20,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const endpoints = [
         `/api/v1/flights/searchAirport?query=${encodeURIComponent(query)}`,
         `/api/v2/flights/searchAirport?query=${encodeURIComponent(query)}`,
-        `/api/v1/flights/auto-complete?query=${encodeURIComponent(query)}`
       ];
 
       let lastError;
@@ -129,7 +128,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const endpoints = [
         `/api/v1/flights/searchFlights`,
         `/api/v2/flights/searchFlights`,
-        `/api/v2/flights/searchFlightsComplete`
       ];
 
       const apiParams = new URLSearchParams({
@@ -192,104 +190,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       throw lastError || new Error('All flight search endpoints failed');
     } catch (error) {
       console.error('Flight search error:', error);
-      
-      // Use default values if searchParams failed to parse
-      const origin = searchParams?.origin || "LOS";
-      const destination = searchParams?.destination || "ABV"; 
-      const departureDate = searchParams?.departureDate || "2025-07-10";
-      
-      // Generate realistic mock flight data based on search parameters
-      const generateMockFlights = (orig: string, dest: string, depDate: string) => {
-        const airlines = [
-          { name: "Air Peace", iata: "P4", aircraft: ["Airbus A320", "Boeing 737"] },
-          { name: "Arik Air", iata: "W3", aircraft: ["Airbus A320", "Boeing 737"] },
-          { name: "Azman Air", iata: "ZQ", aircraft: ["Boeing 737"] },
-          { name: "Max Air", iata: "VM", aircraft: ["Boeing 737"] },
-          { name: "Dana Air", iata: "9J", aircraft: ["Boeing 737"] }
-        ];
-
-        const times = [
-          { dep: "06:30", arr: "07:50", duration: 80 },
-          { dep: "08:15", arr: "09:35", duration: 80 },
-          { dep: "10:35", arr: "11:55", duration: 80 },
-          { dep: "13:40", arr: "15:00", duration: 80 },
-          { dep: "16:20", arr: "17:40", duration: 80 },
-          { dep: "18:45", arr: "20:05", duration: 80 }
-        ];
-
-        const basePrices: Record<string, number> = { "LOS-ABV": 234750, "ABV-LOS": 234750, "LOS-PHC": 180000, "PHC-LOS": 180000 };
-        const routeKey = `${orig}-${dest}`;
-        const basePrice = basePrices[routeKey] || 350000;
-
-        // Generate more flights for pagination testing (18 flights = 3 pages of 6 each)
-        const allFlights: any[] = [];
-        for (let dayOffset = 0; dayOffset < 3; dayOffset++) {
-          const currentDate = new Date(depDate);
-          currentDate.setDate(currentDate.getDate() + dayOffset);
-          const currentDateStr = currentDate.toISOString().split('T')[0];
-          
-          times.forEach((time, index) => {
-            const airline = airlines[index % airlines.length];
-            const priceVariation = (Math.random() - 0.5) * 50000;
-            const finalPrice = Math.round(basePrice + priceVariation);
-            const flightIndex = dayOffset * times.length + index;
-            
-            allFlights.push({
-              id: `flight-${flightIndex + 1}`,
-              price: { raw: finalPrice / 1600, formatted: `₦${finalPrice.toLocaleString()}` },
-              legs: [{
-                id: `leg-${flightIndex + 1}`,
-                origin: { 
-                  id: orig, 
-                  entityId: "123",
-                  name: orig === "LOS" ? "Lagos" : orig === "ABV" ? "Abuja" : "Port Harcourt",
-                  displayCode: orig,
-                  city: orig === "LOS" ? "Lagos" : orig === "ABV" ? "Abuja" : "Port Harcourt",
-                  country: "Nigeria",
-                  isHighlighted: false
-                },
-                destination: { 
-                  id: dest, 
-                  entityId: "456",
-                  name: dest === "LOS" ? "Lagos" : dest === "ABV" ? "Abuja" : "Port Harcourt",
-                  displayCode: dest,
-                  city: dest === "LOS" ? "Lagos" : dest === "ABV" ? "Abuja" : "Port Harcourt",
-                  country: "Nigeria",
-                  isHighlighted: false
-                },
-                departure: `${currentDateStr}T${time.dep}:00.000Z`,
-                arrival: `${currentDateStr}T${time.arr}:00.000Z`,
-                durationInMinutes: time.duration,
-                stopCount: 0,
-                isSmallestStops: false,
-                timeDeltaInDays: 0,
-                carriers: {
-                  marketing: [{
-                    id: -31079,
-                    alternateId: airline.iata,
-                    logoUrl: `https://logos.skyscnr.com/images/airlines/favicon/${airline.iata}.png`,
-                    name: airline.name,
-                    allianceId: 0
-                  }],
-                  operationType: "fully_operated"
-                },
-                segments: [{
-                  id: `segment-${flightIndex + 1}`,
-                  origin: { iata: orig },
-                  destination: { iata: dest },
-                  departure: `${currentDateStr}T${time.dep}:00.000Z`,
-                  arrival: `${currentDateStr}T${time.arr}:00.000Z`,
-                  flightNumber: `${7120 + flightIndex}`,
-                  marketingCarrier: { name: airline.name, iata: airline.iata },
-                  aircraft: { name: airline.aircraft[Math.floor(Math.random() * airline.aircraft.length)] }
-                }]
-              }]
-            });
-          });
-        }
-        
-        return allFlights;
-      };
 
       const mockApiData = {
         status: true,
