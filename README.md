@@ -95,7 +95,7 @@ The application will work with default settings, but for live flight data, you'l
 npm run dev
 ```
 
-The application will be available at `http://localhost:5000`
+The application will be available at `http://localhost:3000`
 
 ## Environment Setup
 
